@@ -100,9 +100,9 @@ fi
 
 # Move files to the nwges directory
 for tile in tile1 tile2 tile3 tile4 tile5 tile6; do
-	mv ${DATA}/out.atm.${tile}.nc $OUTDIR/gfs_data.${tile}.nc
+	cpfs ${DATA}/out.atm.${tile}.nc $OUTDIR/gfs_data.${tile}.nc
 done
-mv ${DATA}/gfs_ctrl.nc $OUTDIR/.
+cpfs ${DATA}/gfs_ctrl.nc $OUTDIR/.
 
 touch ${OUTDIR}/chgres_atm.log  # recenter can start now
 
