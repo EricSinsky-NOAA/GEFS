@@ -202,7 +202,7 @@ if [ $RunRocoto = "yes" ]; then
         module load core/rocoto/1.3.5
 
     fi
-    ./py/run_pyGEFS.py -r yes -f $userConfigFile
+    ./py/run_pyGEFS.py -r yes -f $userConfigFile -o $Operation 
     echo "Generated xml and/or ent and updated bin file!"
 fi # For RunRocoto
 

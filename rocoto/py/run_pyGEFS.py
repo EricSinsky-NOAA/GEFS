@@ -5,10 +5,12 @@
 ##   03/19/2018 first released version by Xianwu Xue
 ##   03/22/2018 Revised to use the default config file based on WHERE_AM_ID by Xianwu Xue
 
+from pprint import pprint
 import GEFS_UserConfig as gefs_config
 import GEFS_XML as gefs_xml
 import GEFS_XML_For_Tasks as gefs_xml_for_tasks
 import GEFS_Parm as gefs_parm
+import GEFS_ECF as gefs_ecf
 #import GEFS_Bin as gefs_bin
 import GEFS_Crontab as gefs_crontab
 
@@ -73,7 +75,9 @@ def main():
         print("--Generating crontab file...")
         gefs_crontab.create_crontab(dicBase, cronint=5)
 
-    
+    if args.Operation.lower() == "ecf":
+        print("--Building ecf workflow ...") 
+        gefs_ecf.stage_ecflow(dicBase)   
 
 if __name__ == '__main__':
     import sys
