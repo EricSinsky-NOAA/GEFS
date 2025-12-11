@@ -2,7 +2,7 @@ import os
 import shutil
 import re
 def stage_ecflow(dicBase):
-    ECF_dir2 = "/lfs/h2/emc/ens/noscrub/eric.sinsky/ecflow/ecflow_home/submit/prod/primary/00/gefs/v12.2"
+    ECF_dir2 = "/lfs/h2/emc/ens/noscrub/eric.sinsky/ecflow/ecflow_home/com/submit/prod/primary/00/gefs/v12.2"
     packagedir =  dicBase['SOURCEDIR']
     ecfoutput = dicBase['WORKDIR']+"/ecf/output"
     GEFS_ROCOTO =  dicBase['GEFS_ROCOTO']
@@ -53,10 +53,47 @@ def stage_ecflow(dicBase):
     with open(prod00def, "r") as f:
         content = f.read()
 
-    pattern = r"^(\s*)edit PACKAGEHOME '.*'"
-    replacement = rf"\1edit PACKAGEHOME '{packagedir}'"
-    content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
+    pattern1 = r"^(\s*)edit PACKAGEHOME '.*'"
+    replacement1 = rf"\1edit PACKAGEHOME '{packagedir}'"
+    content = re.sub(pattern1, replacement1, content, flags=re.MULTILINE)
+
+    pattern2 = r"^(\s*)edit ECF_FILES '%PACKAGEHOME%/ecf/d0_16'"
+    replacement2 = rf"\1edit ECF_FILES '{ECF_dir2}/d0_16'"
+    content = re.sub(pattern2, replacement2, content, flags=re.MULTILINE)
+
+    pattern3 = r"^(\s*)edit ECF_FILES '%PACKAGEHOME%/ecf/d16_35'"
+    replacement3 = rf"\1edit ECF_FILES '{ECF_dir2}/d16_35'"
+    content = re.sub(pattern3, replacement3, content, flags=re.MULTILINE)
 
     with open(prod00def, "w") as f:
         f.write(content)
 
+    target_token = "HOMEgefs"
+    include_line = "%include <envir-dev.h>\n"
+
+
+    for subdir, dirs, files in os.walk(ECF_dir2):
+        for filename in files:
+            if filename.endswith(".ecf"):
+                path = os.path.join(subdir, filename)
+
+                # Read original file
+                with open(path, "r") as f:
+                    lines = f.readlines()
+
+                new_lines = []
+                inserted = False
+
+                for line in lines:
+                    if (not inserted) and target_token in line:
+                        new_lines.append(include_line)
+                        inserted = True
+                    new_lines.append(line)
+
+                # Write updated file only if needed
+                if inserted:
+                    with open(path, "w") as f:
+                        f.writelines(new_lines)
+                    print(f"Updated: {path}")
+                else:
+                    print(f"No HOMEgefs found in: {path}")
